@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+
 import { Place } from './place.model';
 
 @Injectable({
@@ -7,35 +8,41 @@ import { Place } from './place.model';
 export class PlacesService {
   private _places: Place[] = [
     new Place(
-      'r1', 
-      'Baranovichy Mansion', 
-      'In the heart of the world', 
-      'http://www.nashkraj.by/wp-content/uploads/2017/03/NOB_65526.jpg', 
-      2569
+      'p1',
+      'Manhattan Mansion',
+      'In the heart of New York City.',
+      'https://lonelyplanetimages.imgix.net/mastheads/GettyImages-538096543_medium.jpg?sharp=10&vib=20&w=1200',
+      149.99,
+      new Date('2019-01-01'),
+      new Date('2019-12-31')
     ),
     new Place(
-      'r2', 
-      'Baranovichy State', 
-      'The greatest state of the world', 
-      'http://kinobrest.by/uploads/posts/2016-06/1465372375_02.-baranovichi-oktyabr-2016g.jpg', 
-      221569
+      'p2',
+      "L'Amour Toujours",
+      'A romantic place in Paris!',
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Paris_Night.jpg/1024px-Paris_Night.jpg',
+      189.99,
+      new Date('2019-01-01'),
+      new Date('2019-12-31')
     ),
     new Place(
-      'r3', 
-      'Baranovichy Crib', 
-      'Watch out', 
-      'http://www.nashkraj.by/wp-content/uploads/2019/03/gorod-baranovichi.jpg', 
-      19
-    ),
+      'p3',
+      'The Foggy Palace',
+      'Not your average city trip!',
+      'https://upload.wikimedia.org/wikipedia/commons/0/01/San_Francisco_with_two_bridges_and_the_fog.jpg',
+      99.99,
+      new Date('2019-01-01'),
+      new Date('2019-12-31')
+    )
   ];
 
   get places() {
     return [...this._places];
   }
 
-  constructor() { }
+  constructor() {}
 
   getPlace(id: string) {
-    return {...this._places.find(p => p.id === id)};
+    return { ...this._places.find(p => p.id === id) };
   }
 }
