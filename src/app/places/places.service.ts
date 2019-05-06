@@ -43,9 +43,7 @@ export class PlacesService {
   ]);
 
   get places() {
-    // return this._places.asObservable();
     return this._places.asObservable();
-
   }
 
   constructor(private authService: AuthService) {}

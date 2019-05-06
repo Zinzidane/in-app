@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+
 import { PlacesPage } from './places.page';
 
 const routes: Routes = [
@@ -41,7 +42,7 @@ const routes: Routes = [
           {
             path: ':placeId',
             loadChildren:
-              './offers/place-bookings/place-bookings.module#PlaceBookingsPageModule'
+              './offers/offer-bookings/offer-bookings.module#OfferBookingsPageModule'
           }
         ]
       },
@@ -60,9 +61,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes)
-  ],
+  imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class PlacesRoutingModule { }
+export class PlacesRoutingModule {}
