@@ -19,7 +19,11 @@
         <div *ngIf="isLoading" text-center>
           <ion-spinner color="primary" ></ion-spinner>
         </div>
-        <p text-center *ngIf="!isLoading && offers.length <= 0">No offers found. Please create one first!</p>
+        <div text-center *ngIf="!isLoading && offers.length <= 0">
+          <p >No offers found. Please create one first!</p>
+          <ion-button color="primary" routerLink="/places/tabs/offers/new">Offer new place</ion-button>
+        </div>
+
         <ion-list *ngIf="!isLoading && offers.length > 0">
           <ion-item-sliding *ngFor="let offer of offers" #slidingItem>
             <app-offer-item [offer]="offer"></app-offer-item>
