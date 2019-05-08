@@ -5,15 +5,17 @@ import { take, map, tap, switchMap } from 'rxjs/operators';
 import { Place } from './place.model';
 import { AuthService } from '../auth/auth.service';
 import { HttpClient } from '@angular/common/http';
+import { PlaceLocation } from './location.model';
 
 interface PlaceData {
-  availableFrom: string,
-  availableTo: string,
-  description: string,
-  imageUrl: string,
-  price: number,
-  title: string,
-  userId: string
+  availableFrom: string;
+  availableTo: string;
+  description: string;
+  imageUrl: string;
+  price: number;
+  title: string;
+  userId: string;
+  location: PlaceLocation;
 }
 
 @Injectable({
@@ -30,25 +32,31 @@ export class PlacesService {
 
   fetchPlaces() {
     return this.http
-      .get<{[key: string]: PlaceData}>('https://ionic-app-876a0.firebaseio.com/offered-places.json')
+      .get<{ [key: string]: PlaceData }>(
+        'https://ionic-app-876a0.firebaseio.com/offered-places.json'
+      )
       .pipe(
         map(resData => {
           const places = [];
           for (const key in resData) {
             if (resData.hasOwnProperty(key)) {
-              places.push(new Place(
-                key, 
-                resData[key].title, 
-                resData[key].description, 
-                resData[key].imageUrl, 
-                resData[key].price, 
-                new Date(resData[key].availableFrom), 
-                new Date(resData[key].availableTo), 
-                resData[key].userId
-              ));
+              places.push(
+                new Place(
+                  key,
+                  resData[key].title,
+                  resData[key].description,
+                  resData[key].imageUrl,
+                  resData[key].price,
+                  new Date(resData[key].availableFrom),
+                  new Date(resData[key].availableTo),
+                  resData[key].userId,
+                  resData[key].location
+                )
+              );
             }
           }
           return places;
+          // return [];
         }),
         tap(places => {
           this._places.next(places);
@@ -58,7 +66,9 @@ export class PlacesService {
 
   getPlace(id: string) {
     return this.http
-      .get<PlaceData>(`https://ionic-app-876a0.firebaseio.com/offered-places/${id}.json`)
+      .get<PlaceData>(
+        `https://ionic-app-876a0.firebaseio.com/offered-places/${id}.json`
+      )
       .pipe(
         map(placeData => {
           return new Place(
@@ -69,10 +79,11 @@ export class PlacesService {
             placeData.price,
             new Date(placeData.availableFrom),
             new Date(placeData.availableTo),
-            placeData.userId
+            placeData.userId,
+            placeData.location
           );
         })
-      )
+      );
   }
 
   addPlace(
@@ -80,7 +91,8 @@ export class PlacesService {
     description: string,
     price: number,
     dateFrom: Date,
-    dateTo: Date
+    dateTo: Date,
+    location: PlaceLocation
   ) {
     let generatedId: string;
     const newPlace = new Place(
@@ -91,10 +103,17 @@ export class PlacesService {
       price,
       dateFrom,
       dateTo,
-      this.authService.userId
+      this.authService.userId,
+      location
     );
     return this.http
-      .post<{name: string}>('https://ionic-app-876a0.firebaseio.com/offered-places.json', {...newPlace, id: null})
+      .post<{ name: string }>(
+        'https://ionic-app-876a0.firebaseio.com/offered-places.json',
+        {
+          ...newPlace,
+          id: null
+        }
+      )
       .pipe(
         switchMap(resData => {
           generatedId = resData.name;
@@ -138,16 +157,17 @@ export class PlacesService {
           oldPlace.price,
           oldPlace.availableFrom,
           oldPlace.availableTo,
-          oldPlace.userId
+          oldPlace.userId,
+          oldPlace.location
         );
         return this.http.put(
           `https://ionic-app-876a0.firebaseio.com/offered-places/${placeId}.json`,
-          {...updatedPlaces[updatedPlaceIndex], id: null}
+          { ...updatedPlaces[updatedPlaceIndex], id: null }
         );
       }),
       tap(() => {
-        return this._places.next(updatedPlaces);
+        this._places.next(updatedPlaces);
       })
-    )
+    );
   }
 }

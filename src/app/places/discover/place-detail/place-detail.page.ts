@@ -14,6 +14,7 @@ import { Place } from '../../place.model';
 import { CreateBookingComponent } from '../../../bookings/create-booking/create-booking.component';
 import { BookingService } from '../../../bookings/booking.service';
 import { AuthService } from '../../../auth/auth.service';
+import { MapModalComponent } from '../../../shared/map-modal/map-modal.component';
 
 @Component({
   selector: 'app-place-detail',
@@ -29,14 +30,14 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
   constructor(
     private navCtrl: NavController,
     private route: ActivatedRoute,
-    private router: Router,
     private placesService: PlacesService,
     private modalCtrl: ModalController,
     private actionSheetCtrl: ActionSheetController,
     private bookingService: BookingService,
     private loadingCtrl: LoadingController,
     private authService: AuthService,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -48,24 +49,29 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
       this.isLoading = true;
       this.placeSub = this.placesService
         .getPlace(paramMap.get('placeId'))
-        .subscribe(place => {
-          this.place = place;
-          this.isBookable = place.userId !== this.authService.userId;
-
-          this.isLoading = false;
-        }, error => {
+        .subscribe(
+          place => {
+            this.place = place;
+            this.isBookable = place.userId !== this.authService.userId;
+            this.isLoading = false;
+          },
+          error => {
             this.alertCtrl
               .create({
-                header: 'An error occurred!', 
-                message: 'Could not load place.', 
-                buttons: [{text: 'Okay', handler: () => {
-                  this.router.navigate(['/places/tabs/discover']);
-                }}]
+                header: 'An error ocurred!',
+                message: 'Could not load place.',
+                buttons: [
+                  {
+                    text: 'Okay',
+                    handler: () => {
+                      this.router.navigate(['/places/tabs/discover']);
+                    }
+                  }
+                ]
               })
-              .then(alertEl => {
-                alertEl.present();
-              })
-        });
+              .then(alertEl => alertEl.present());
+          }
+        );
     });
   }
 
@@ -134,6 +140,25 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
                 });
             });
         }
+      });
+  }
+
+  onShowFullMap() {
+    this.modalCtrl
+      .create({
+        component: MapModalComponent,
+        componentProps: {
+          center: {
+            lat: this.place.location.lat,
+            lng: this.place.location.lng
+          },
+          selectable: false,
+          closeButtonText: 'Close',
+          title: this.place.location.address
+        }
+      })
+      .then(modalEl => {
+        modalEl.present();
       });
   }
 

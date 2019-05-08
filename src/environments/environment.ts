@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  yandexMapsAPIKey: '96a7a9f1-43a7-4409-b9cb-cc41a4187643'
+  googleMapsAPIKey: 'AIzaSyDDU3xA1SKRSBLif29qvLnWt7m3IJaoVpI'
 };
 
 /*

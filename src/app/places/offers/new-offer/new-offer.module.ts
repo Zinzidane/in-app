@@ -20,8 +20,8 @@ const routes: Routes = [
     CommonModule,
     IonicModule,
     ReactiveFormsModule,
-    SharedModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    SharedModule
   ],
   declarations: [NewOfferPage]
 })
