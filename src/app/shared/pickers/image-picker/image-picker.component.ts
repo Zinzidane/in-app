@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Plugins, Capacitor } from '@capacitor/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Plugins, Capacitor, CameraSource, CameraResultType } from '@capacitor/core';
 
 @Component({
   selector: 'app-image-picker',
@@ -8,6 +8,7 @@ import { Plugins, Capacitor } from '@capacitor/core';
 })
 export class ImagePickerComponent implements OnInit {
   selectedImage: string;
+  @Output() imagePick = new EventEmitter<string>();
 
   constructor() { }
 
@@ -17,6 +18,21 @@ export class ImagePickerComponent implements OnInit {
     if (!Capacitor.isPluginAvailable('Camera')) {
       return;
     }
+
+    Plugins.Camera.getPhoto({
+      quality: 50,
+      source: CameraSource.Prompt,
+      correctOrientation: true,
+      height: 320,
+      width: 200,
+      resultType: CameraResultType.Base64
+    }).then(image => {
+      this.selectedImage = image.base64String;
+      this.imagePick.emit(image.base64String);
+    }).catch(err => {
+      console.log(err);
+      return false;
+    });
   }
 
 }
