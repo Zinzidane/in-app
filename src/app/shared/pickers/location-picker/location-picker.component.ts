@@ -1,5 +1,9 @@
-import { Component, OnInit, EventEmitter, Output } from '@angular/core';
-import { ModalController, ActionSheetController, AlertController } from '@ionic/angular';
+import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
+import {
+  ModalController,
+  ActionSheetController,
+  AlertController
+} from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { map, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -16,11 +20,12 @@ import { PlaceLocation, Coordinates } from '../../../places/location.model';
 })
 export class LocationPickerComponent implements OnInit {
   @Output() locationPick = new EventEmitter<PlaceLocation>();
+  @Input() showPreview = false;
   selectedLocationImage: string;
   isLoading = false;
 
   constructor(
-    private modalCtrl: ModalController, 
+    private modalCtrl: ModalController,
     private http: HttpClient,
     private actionSheetCtrl: ActionSheetController,
     private alertCtrl: AlertController
@@ -29,33 +34,32 @@ export class LocationPickerComponent implements OnInit {
   ngOnInit() {}
 
   onPickLocation() {
-    this.actionSheetCtrl.create({
-      header: 'Please choose',
-      buttons: [
-        {
-          text: 'Auto-locate',
-          handler: () => {
-            this.locateUser();
-          }
-        },
-        {
-          text: 'Pick on Map',
-          handler: () => {
-            this.openMap();
-          }
-        },
-        {
-          text: 'Cancel',
-          role: 'cancel'
-        }
-      ]
-    }).then(actionSheetEl => {
-      actionSheetEl.present();
-    });
+    this.actionSheetCtrl
+      .create({
+        header: 'Please Choose',
+        buttons: [
+          {
+            text: 'Auto-Locate',
+            handler: () => {
+              this.locateUser();
+            }
+          },
+          {
+            text: 'Pick on Map',
+            handler: () => {
+              this.openMap();
+            }
+          },
+          { text: 'Cancel', role: 'cancel' }
+        ]
+      })
+      .then(actionSheetEl => {
+        actionSheetEl.present();
+      });
   }
 
   private locateUser() {
-    if(!Capacitor.isPluginAvailable('Geolocation')) {
+    if (!Capacitor.isPluginAvailable('Geolocation')) {
       this.showErrorAlert();
       return;
     }
@@ -66,7 +70,6 @@ export class LocationPickerComponent implements OnInit {
           lat: geoPosition.coords.latitude,
           lng: geoPosition.coords.longitude
         };
-
         this.createPlace(coordinates.lat, coordinates.lng);
         this.isLoading = false;
       })
@@ -77,11 +80,13 @@ export class LocationPickerComponent implements OnInit {
   }
 
   private showErrorAlert() {
-    this.alertCtrl.create({
-      header: 'Could not fetch location', 
-      message: 'Please use the map to pick a location',
-      buttons: ['Okay']
-    }).then(alertEl => alertEl.present());
+    this.alertCtrl
+      .create({
+        header: 'Could not fetch location',
+        message: 'Please use the map to pick a location!',
+        buttons: ['Okay']
+      })
+      .then(alertEl => alertEl.present());
   }
 
   private openMap() {
@@ -94,7 +99,6 @@ export class LocationPickerComponent implements OnInit {
           lat: modalData.data.lat,
           lng: modalData.data.lng
         };
-        
         this.createPlace(coordinates.lat, coordinates.lng);
       });
       modalEl.present();
@@ -108,7 +112,6 @@ export class LocationPickerComponent implements OnInit {
       address: null,
       staticMapImageUrl: null
     };
-
     this.isLoading = true;
     this.getAddress(lat, lng)
       .pipe(
